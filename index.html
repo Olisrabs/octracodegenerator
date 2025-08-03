@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octra Code - Quote Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .get-quote-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .get-quote-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quote-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 4px solid #764ba2;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .quote-container.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #e0e0e0;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #764ba2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .quote-text {
+                font-size: 1.2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+
+        .container > h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            margin-right: 15px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .logo > img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span class="logo"><img src="images/20250801_214442.jpg" alt=""></span>
+            Octra Code
+        </h1>
+        <button class="get-quote-btn" onclick="generateQuote()">Get Quote</button>
+        
+        <div class="quote-container" id="quoteContainer">
+            <div class="quote-text" id="quoteText"></div>
+            <div class="quote-author" id="quoteAuthor"></div>
+            
+            <div class="action-buttons">
+                <button class="action-btn" onclick="copyQuote()">
+                    📋 Copy
+                </button>
+                <button class="action-btn" onclick="shareQuote()">
+                    🔗 Share
+                </button>
+                <button class="action-btn" onclick="generateQuote()">
+                    🔄 New Quote
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="copy-success" id="copySuccess">
+        Quote copied to clipboard!
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                text: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs"
+            },
+            {
+                text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                author: "Winston Churchill"
+            },
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                text: "It is during our darkest moments that we must focus to see the light.",
+                author: "Aristotle"
+            },
+            {
+                text: "Discipline is the bridge between goals and accomplishment.",
+                author: "Jim Rohn"
+            },
+            {
+                text: "The way to get started is to quit talking and begin doing.",
+                author: "Walt Disney"
+            },
+            {
+                text: "Don't watch the clock; do what it does. Keep going.",
+                author: "Sam Levenson"
+            },
+            {
+                text: "A year from now you may wish you had started today.",
+                author: "Karen Lamb"
+            },
+            {
+                text: "Your limitation—it's only your imagination.",
+                author: "Unknown"
+            },
+            {
+                text: "Push yourself, because no one else is going to do it for you.",
+                author: "Unknown"
+            },
+            {
+                text: "Great things never come from comfort zones.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream it. Wish it. Do it.",
+                author: "Unknown"
+            },
+            {
+                text: "Success doesn't just find you. You have to go out and get it.",
+                author: "Unknown"
+            },
+            {
+                text: "The harder you work for something, the greater you'll feel when you achieve it.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream bigger. Do bigger.",
+                author: "Unknown"
+            },
+            {
+                text: "Don't stop when you're tired. Stop when you're done.",
+                author: "Unknown"
+            },
+            {
+                text: "Wake up with determination. Go to bed with satisfaction.",
+                author: "Unknown"
+            },
+            {
+                text: "Do something today that your future self will thank you for.",
+                author: "Sean Patrick Flanery"
+            },
+            {
+                text: "Little things make big days.",
+                author: "Unknown"
+            },
+            {
+                text: "It's going to be hard, but hard does not mean impossible.",
+                author: "Unknown"
+            },
+            {
+                text: "Don't wait for opportunity. Create it.",
+                author: "Unknown"
+            },
+            {
+                text: "Sometimes we're tested not to show our weaknesses, but to discover our strengths.",
+                author: "Unknown"
+            },
+            {
+                text: "The key to success is to focus on goals, not obstacles.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream it. Believe it. Build it.",
+                author: "Unknown"
+            },
+            {
+                text: "Execution is everything. Ideas without execution are just dreams.",
+                author: "Unknown"
+            },
+            {
+                text: "Discipline is choosing between what you want now and what you want most.",
+                author: "Abraham Lincoln"
+            },
+            {
+                text: "The difference between ordinary and extraordinary is that little extra.",
+                author: "Jimmy Johnson"
+            },
+            {
+                text: "You don't have to be great to get started, but you have to get started to be great.",
+                author: "Les Brown"
+            },
+            {
+                text: "Progress, not perfection.",
+                author: "Unknown"
+            },
+            {
+                text: "Champions keep playing until they get it right.",
+                author: "Billie Jean King"
+            }
+        ];
+
+        let currentQuote = null;
+
+        function generateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            currentQuote = quotes[randomIndex];
+            
+            document.getElementById('quoteText').textContent = `"${currentQuote.text}"`;
+            document.getElementById('quoteAuthor').textContent = `— ${currentQuote.author}`;
+            
+            const quoteContainer = document.getElementById('quoteContainer');
+            quoteContainer.classList.add('show');
+        }
+
+        function copyQuote() {
+            if (currentQuote) {
+                const quoteText = `"${currentQuote.text}" — ${currentQuote.author}`;
+                navigator.clipboard.writeText(quoteText).then(() => {
+                    showCopySuccess();
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = quoteText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showCopySuccess();
+                });
+            }
+        }
+
+        function shareQuote() {
+            if (currentQuote) {
+                const quoteText = `"${currentQuote.text}" — ${currentQuote.author}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Inspirational Quote',
+                        text: quoteText,
+                        url: window.location.href
+                    });
+                } else {
+                    // Fallback: copy to clipboard
+                    copyQuote();
+                }
+            }
+        }
+
+        function showCopySuccess() {
+            const successMessage = document.getElementById('copySuccess');
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        // Generate a quote on page load
+        window.addEventListener('load', () => {
+            // Optional: uncomment the line below to show a quote immediately on page load
+            // generateQuote();
+        });
+    </script>
+</body>
+</html>
