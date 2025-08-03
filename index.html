@@ -74,6 +74,9 @@
         .quote-container.show {
             display: block;
         }
+        .hide {
+            display: none;
+        }
 
         @keyframes fadeIn {
             from {
@@ -212,7 +215,7 @@
             <span class="logo"><img src="images/20250801_214442.jpg" alt=""></span>
             Octra Code
         </h1>
-        <button class="get-quote-btn" onclick="generateQuote()">Get Quote</button>
+        <button class="get-quote-btn" id="getQuote" onclick="generateQuote()">Get Quote</button>
         
         <div class="quote-container" id="quoteContainer">
             <div class="quote-text" id="quoteText"></div>
@@ -370,7 +373,9 @@
             document.getElementById('quoteAuthor').textContent = `— ${currentQuote.author}`;
             
             const quoteContainer = document.getElementById('quoteContainer');
+            const getQuote = document.getElementById('getQuote');
             quoteContainer.classList.add('show');
+            getQuote.classList.add('hide');
         }
 
         function copyQuote() {
